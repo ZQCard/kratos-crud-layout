@@ -1,8 +1,8 @@
 service:
-  name: kratos-crud-layout
+  name: ServiceName
   version: v1
 trace:
-  endpoint: http://127.0.0.1/:14268/api/traces
+  endpoint: http://127.0.0.1:14268/api/traces
 server:
   grpc:
     addr: 0.0.0.0:9000
@@ -10,15 +10,15 @@ server:
 data:
   database:
     driver: mysql
-    source: root:123456@tcp(127.0.0.1:3306)/kratos-crud-layout?parseTime=true
+    source: root:127.0.0.1@tcp(127.0.0.1:3306)/ServiceName?parseTime=true
   redis:
     addr: 127.0.0.1:6379
     password:
     read_timeout: 0.2s
     write_timeout: 0.2s
 auth:
-  service_key: "kratos-base-project-administrator-service-key"
-  api_key: "kratos-base-project-administrator-api-key"
+  service_key: "ServiceName-service-key"
+  api_key: "ServiceName-api-key"
 consul:
   address: 127.0.0.1:8500
   scheme: http

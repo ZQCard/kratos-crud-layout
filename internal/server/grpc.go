@@ -1,7 +1,7 @@
 package server
 
 import (
-	v1 "github.com/ZQCard/kratos-crud-layout/api/yourServiceName/v1"
+	v1 "github.com/ZQCard/kratos-crud-layout/api/serviceName/v1"
 	"github.com/ZQCard/kratos-crud-layout/internal/conf"
 	"github.com/ZQCard/kratos-crud-layout/internal/service"
 	"github.com/go-kratos/kratos/v2/log"
@@ -10,7 +10,7 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Server, service *service.BusinessModuleNameService, logger log.Logger) *grpc.Server {
+func NewGRPCServer(c *conf.Server, service *service.ServiceNameService, logger log.Logger) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
@@ -26,6 +26,6 @@ func NewGRPCServer(c *conf.Server, service *service.BusinessModuleNameService, l
 		opts = append(opts, grpc.Timeout(c.Grpc.Timeout.AsDuration()))
 	}
 	srv := grpc.NewServer(opts...)
-	v1.RegisterBusinessModuleNameServer(srv, service)
+	v1.RegisterServiceNameServer(srv, service)
 	return srv
 }

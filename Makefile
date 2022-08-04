@@ -2,8 +2,15 @@ GOHOSTOS:=$(shell go env GOHOSTOS)
 GOPATH:=$(shell go env GOPATH)
 VERSION=$(shell git describe --tags --always)
 APP_RELATIVE_PATH=$(shell a=`basename $$PWD` && cd .. && b=`basename $$PWD` && echo $$b/$$a)
+SERVICE_NAME=$(shell a=`basename $$PWD` && echo $$a)
+SERVICE_NAME_UPPER=$(shell echo $(SERVICE_NAME) | cut -b 1 | tr [a-z] [A-Z])
+SERVICE_NAME_UPPER1=$(shell echo $(SERVICE_NAME) | cut -b 2-)
+SERVICE_NAME_UPPERAll=$(shell echo $(SERVICE_NAME_UPPER)$(SERVICE_NAME_UPPER1) )
 APP_NAME=$(shell echo $(APP_RELATIVE_PATH) | sed -En "s/\//-/p")
 DOCKER_IMAGE=$(shell echo $(APP_NAME) |awk -F '@' '{print "kratos-crud-layout/" $$0 ":0.1.0"}')
+TEMPLATE_SERVICE_NAME="serviceName"
+TEMPLATE_SERVICE_NAME_UPPER="ServiceName"
+
 ifeq ($(GOHOSTOS), windows)
 	#the `find.exe` is different from `find` in bash/shell.
 	#to see https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/find.
@@ -86,3 +93,54 @@ help:
 docker:
 	docker build -f ./Dockerfile --build-arg APP_RELATIVE_PATH=$(APP_RELATIVE_PATH) -t $(DOCKER_IMAGE) .
 
+# 新服务初始化
+.PHONY: newServiceInit
+newServiceInit:
+	@echo $(SERVICE_NAME)
+	@echo $(TEMPLATE_SERVICE_NAME)
+	@echo $(TEMPLATE_SERVICE_NAME_UPPER)
+	@echo $(SERVICE_NAME_UPPERAll)
+	# 更改文件名称
+	@$(shell cp ./api/$(TEMPLATE_SERVICE_NAME)/v1/$(TEMPLATE_SERVICE_NAME).proto ./api/$(TEMPLATE_SERVICE_NAME)/v1/$(SERVICE_NAME).proto)
+	# 更新文件夹
+	@$(shell mv ./api/$(TEMPLATE_SERVICE_NAME) ./api/$(SERVICE_NAME))
+	# 替换包名
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME)\//$(SERVICE_NAME)\//g" ./api/$(SERVICE_NAME)/v1/$(SERVICE_NAME).proto)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME)\./$(SERVICE_NAME)\./g" ./api/$(SERVICE_NAME)/v1/$(SERVICE_NAME).proto)
+	# 替换proto文件内容
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME_UPPER)/$(SERVICE_NAME_UPPERAll)/g" ./api/$(SERVICE_NAME)/v1/$(SERVICE_NAME).proto)
+	# 生成客户端文件
+	@$(shell kratos proto client ./api/$(SERVICE_NAME)/v1/$(SERVICE_NAME).proto)
+	# 删除模板文件
+	@$(shell rm ./api/$(SERVICE_NAME)/v1/serviceName*)
+	#替换每一个文件下的内容 (server)
+    @$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME_UPPER)/$(SERVICE_NAME_UPPERAll)/g" ./cmd/server/wire_gen.go)
+	#替换每一个文件下的内容 (service)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME_UPPER)/$(SERVICE_NAME_UPPERAll)/g" ./internal/service/service.go)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME)/$(SERVICE_NAME)/g" ./internal/service/$(TEMPLATE_SERVICE_NAME).go)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME_UPPER)/$(SERVICE_NAME_UPPERAll)/g" ./internal/service/$(TEMPLATE_SERVICE_NAME).go)
+	# 更改文件
+	@$(shell mv ./internal/service/$(TEMPLATE_SERVICE_NAME).go ./internal/service/$(SERVICE_NAME).go)
+	#替换每一个文件下的内容 (grpc)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME)/$(SERVICE_NAME)/g" ./internal/server/grpc.go)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME_UPPER)/$(SERVICE_NAME_UPPERAll)/g" ./internal/server/grpc.go)
+	#替换每一个文件下的内容 (biz)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME_UPPER)/$(SERVICE_NAME_UPPERAll)/g" ./internal/biz/biz.go)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME)/$(SERVICE_NAME)/g" ./internal/biz/$(TEMPLATE_SERVICE_NAME).go)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME_UPPER)/$(SERVICE_NAME_UPPERAll)/g" ./internal/biz/$(TEMPLATE_SERVICE_NAME).go)
+	# 更改文件
+	@$(shell mv ./internal/biz/$(TEMPLATE_SERVICE_NAME).go ./internal/biz/$(SERVICE_NAME).go)
+	#替换每一个文件下的内容 (data)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME_UPPER)/$(SERVICE_NAME_UPPERAll)/g" ./internal/data/data.go)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME)/$(SERVICE_NAME)/g" ./internal/data/$(TEMPLATE_SERVICE_NAME).go)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME_UPPER)/$(SERVICE_NAME_UPPERAll)/g" ./internal/data/$(TEMPLATE_SERVICE_NAME).go)
+	# 更改文件
+	@$(shell mv ./internal/data/$(TEMPLATE_SERVICE_NAME).go ./internal/data/$(SERVICE_NAME).go)
+	#替换每一个文件下的内容 (model)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME)/$(SERVICE_NAME)/g" ./internal/data/entity/$(TEMPLATE_SERVICE_NAME).go)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME_UPPER)/$(SERVICE_NAME_UPPERAll)/g" ./internal/data/entity/$(TEMPLATE_SERVICE_NAME).go)
+	# 更改文件
+	@$(shell mv ./internal/data/entity/$(TEMPLATE_SERVICE_NAME).go ./internal/data/entity/$(SERVICE_NAME).go)
+	#更改配置文件
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME)/$(SERVICE_NAME)/g" ./configs/config.yaml)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME_UPPER)/$(SERVICE_NAME)/g" ./configs/config.yaml)

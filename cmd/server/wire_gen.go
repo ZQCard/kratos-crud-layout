@@ -27,10 +27,10 @@ func wireApp(confServer *conf.Server, registry *conf.Registry, confData *conf.Da
 	if err != nil {
 		return nil, nil, err
 	}
-	businessModuleNameRepo := data.NewBusinessModuleNameRepo(dataData, logger)
-	businessModuleNameUseCase := biz.NewBusinessModuleNameUseCase(businessModuleNameRepo, logger)
-	businessModuleNameService := service.NewBusinessModuleNameService(businessModuleNameUseCase, logger)
-	grpcServer := server.NewGRPCServer(confServer, businessModuleNameService, logger)
+	ServiceNameRepo := data.NewServiceNameRepo(dataData, logger)
+	ServiceNameUseCase := biz.NewServiceNameUseCase(ServiceNameRepo, logger)
+	ServiceNameService := service.NewServiceNameService(ServiceNameUseCase, logger)
+	grpcServer := server.NewGRPCServer(confServer, ServiceNameService, logger)
 	registrar := data.NewRegistrar(registry)
 	app := newApp(logger, grpcServer, registrar)
 	return app, func() {

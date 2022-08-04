@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package api.serviceName.v1;
+
+option go_package = "github.com/ZQCard/kratos-crud-layout/api/serviceName/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.serviceName.v1";
+
+service ServiceName {
+	rpc CreateServiceName (CreateServiceNameRequest) returns (ServiceNameInfoResponse);
+	rpc UpdateServiceName (UpdateServiceNameRequest) returns (ServiceNameInfoResponse);
+	rpc DeleteServiceName (DeleteServiceNameRequest) returns (ServiceNameCheckResponse);
+	rpc GetServiceName (GetServiceNameRequest) returns (ServiceNameInfoResponse);
+	rpc ListServiceName (ListServiceNameRequest) returns (ListServiceNameReply);
+}
+
+message CreateServiceNameRequest {
+	int64 id = 1;
+}
+
+message UpdateServiceNameRequest {
+	int64 id = 1;
+}
+
+message DeleteServiceNameRequest {
+	int64 id = 1;
+}
+
+message GetServiceNameRequest {
+	int64 id = 1;
+}
+
+message ListServiceNameRequest {
+	int64 page_num = 1;
+	int64 page_size = 2;
+}
+message ListServiceNameReply {
+	int64 total = 1;
+	repeated ServiceNameInfoResponse list = 2;
+}
+
+message ServiceNameInfoResponse {
+	int64 id = 1;
+}
+
+message ServiceNameCheckResponse{
+	bool is_success = 1;
+}
