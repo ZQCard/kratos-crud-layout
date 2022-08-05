@@ -1,6 +1,6 @@
 # Kratos Project CRUD Template
 
-基于[kratos-layout](https://github.com/go-kratos/kratos-layout) 生成的crud项目模板
+基于[kratos-layout](https://github.com/go-kratos/kratos-layout) 生成的crud项目模板,根据文件夹名称生成相应的服务
 
 ### 中间件
 
