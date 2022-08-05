@@ -33,13 +33,13 @@ func (b ServiceNameRepo) GetServiceNameByParams(params map[string]interface{}) (
 }
 
 func (b ServiceNameRepo) CreateServiceName(ctx context.Context, reqData *biz.ServiceName) (*biz.ServiceName, error) {
-	response := &biz.ServiceName{}
 	modelTable := entity.ServiceNameEntity{}
 	modelTable.Id = reqData.Id
 	if err := b.data.db.Model(&modelTable).Create(&modelTable).Error; err != nil {
 		return nil, errors.New(500, "SYSTEM_ERROR", err.Error())
 	}
-	return response, nil
+	response := ModelToResponse(modelTable)
+	return &response, nil
 }
 
 func (b ServiceNameRepo) UpdateServiceName(ctx context.Context, reqData *biz.ServiceName) (*biz.ServiceName, error) {
@@ -56,9 +56,8 @@ func (b ServiceNameRepo) UpdateServiceName(ctx context.Context, reqData *biz.Ser
 		return nil, errors.New(500, "SYSTEM_ERROR", err.Error())
 	}
 	// 返回数据
-	response := &biz.ServiceName{}
-	response.Id = record.Id
-	return response, nil
+	response := ModelToResponse(record)
+	return &response, nil
 }
 
 func (b ServiceNameRepo) GetServiceName(ctx context.Context, id int64) (*biz.ServiceName, error) {
@@ -70,9 +69,8 @@ func (b ServiceNameRepo) GetServiceName(ctx context.Context, id int64) (*biz.Ser
 		return nil, err
 	}
 	// 返回数据
-	response := &biz.ServiceName{}
-	response.Id = record.Id
-	return response, nil
+	response := ModelToResponse(record)
+	return &response, nil
 }
 
 func (b ServiceNameRepo) ListServiceName(ctx context.Context, pageNum, pageSize int64) ([]*biz.ServiceName, int64, error) {
@@ -87,9 +85,8 @@ func (b ServiceNameRepo) ListServiceName(ctx context.Context, pageNum, pageSize 
 	conn.Count(&count)
 	rv := make([]*biz.ServiceName, 0, len(list))
 	for _, record := range list {
-		rv = append(rv, &biz.ServiceName{
-			Id: record.Id,
-		})
+		serviceName := ModelToResponse(record)
+		rv = append(rv, &serviceName)
 	}
 	return rv, count, nil
 }
@@ -103,6 +100,13 @@ func (b ServiceNameRepo) DeleteServiceName(ctx context.Context, id int64) error 
 		return err
 	}
 	return b.data.db.Model(&record).Where("id = ?", id).Delete(&record).Error
+}
+
+// ModelToResponse 转换 serviceName 表中所有字段的值
+func ModelToResponse(serviceName entity.ServiceNameEntity) biz.ServiceName {
+	administratorInfoRsp := biz.ServiceName{}
+	administratorInfoRsp.Id = serviceName.Id
+	return administratorInfoRsp
 }
 
 func NewServiceNameRepo(data *Data, logger log.Logger) biz.ServiceNameRepo {
