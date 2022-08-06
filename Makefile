@@ -144,3 +144,7 @@ newServiceInit:
 	#更改配置文件
 	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME)/$(SERVICE_NAME)/g" ./configs/config.yaml)
 	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME_UPPER)/$(SERVICE_NAME)/g" ./configs/config.yaml)
+	# 更新配置文件
+	make config
+	# 拉取引用包
+	go mod tidy
