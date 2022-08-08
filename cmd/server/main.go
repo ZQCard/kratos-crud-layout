@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"github.com/bwmarrin/snowflake"
 	"github.com/go-kratos/kratos/v2/registry"
 	"go.opentelemetry.io/otel/sdk/resource"
 	"os"
@@ -27,7 +28,7 @@ var (
 	// flagconf is the config flag.
 	flagconf string
 
-	id, _ = os.Hostname()
+	Id string
 )
 
 func init() {
@@ -36,7 +37,7 @@ func init() {
 
 func newApp(logger log.Logger, gs *grpc.Server, rr registry.Registrar) *kratos.App {
 	return kratos.New(
-		kratos.ID(id),
+		kratos.ID(Id),
 		kratos.Name(Name),
 		kratos.Version(Version),
 		kratos.Metadata(map[string]string{}),
@@ -53,7 +54,7 @@ func main() {
 	logger := log.With(log.NewStdLogger(os.Stdout),
 		"ts", log.DefaultTimestamp,
 		"caller", log.DefaultCaller,
-		"service.id", id,
+		"service.id", Id,
 		"service.name", Name,
 		"service.version", Version,
 		"trace.id", tracing.TraceID(),
@@ -77,6 +78,12 @@ func main() {
 
 	Name = bc.Service.Name
 	Version = bc.Service.Version
+	// 应用id 生成雪花随机数
+	node, _ := snowflake.NewNode(1)
+	// 生成雪花id 读取其中的9位
+	snowflakeId := node.Generate().String()
+	hostname, _ := os.Hostname()
+	Id = hostname + "." + bc.Service.Name + "." + Version + "." + snowflakeId
 
 	var rc conf.Registry
 	if err := c.Scan(&rc); err != nil {
