@@ -9,30 +9,39 @@ option java_package = "api.serviceName.v1";
 service ServiceName {
 	rpc CreateServiceName (CreateServiceNameRequest) returns (ServiceNameInfoResponse);
 	rpc UpdateServiceName (UpdateServiceNameRequest) returns (ServiceNameInfoResponse);
-	rpc DeleteServiceName (DeleteServiceNameRequest) returns (ServiceNameCheckResponse);
 	rpc GetServiceName (GetServiceNameRequest) returns (ServiceNameInfoResponse);
 	rpc ListServiceName (ListServiceNameRequest) returns (ListServiceNameReply);
+	rpc DeleteServiceName (DeleteServiceNameRequest) returns (ServiceNameCheckResponse);
+	rpc RecoverServiceName (RecoverServiceNameRequest) returns (ServiceNameCheckResponse);
 }
 
 message CreateServiceNameRequest {
 	int64 id = 1;
+	string name = 2;
 }
 
 message UpdateServiceNameRequest {
 	int64 id = 1;
+	string name = 2;
 }
 
 message DeleteServiceNameRequest {
 	int64 id = 1;
 }
 
+message RecoverServiceNameRequest {
+	int64 id = 1;
+}
+
 message GetServiceNameRequest {
 	int64 id = 1;
+	string name = 2;
 }
 
 message ListServiceNameRequest {
 	int64 page_num = 1;
 	int64 page_size = 2;
+	string name = 3;
 }
 message ListServiceNameReply {
 	int64 total = 1;
@@ -41,6 +50,10 @@ message ListServiceNameReply {
 
 message ServiceNameInfoResponse {
 	int64 id = 1;
+	string name = 2;
+	string created_at = 3;
+	string updated_at = 4;
+	string deleted_at = 5;
 }
 
 message ServiceNameCheckResponse{

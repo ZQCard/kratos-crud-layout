@@ -24,9 +24,10 @@ const _ = grpc.SupportPackageIsVersion7
 type ServiceNameClient interface {
 	CreateServiceName(ctx context.Context, in *CreateServiceNameRequest, opts ...grpc.CallOption) (*ServiceNameInfoResponse, error)
 	UpdateServiceName(ctx context.Context, in *UpdateServiceNameRequest, opts ...grpc.CallOption) (*ServiceNameInfoResponse, error)
-	DeleteServiceName(ctx context.Context, in *DeleteServiceNameRequest, opts ...grpc.CallOption) (*ServiceNameCheckResponse, error)
 	GetServiceName(ctx context.Context, in *GetServiceNameRequest, opts ...grpc.CallOption) (*ServiceNameInfoResponse, error)
 	ListServiceName(ctx context.Context, in *ListServiceNameRequest, opts ...grpc.CallOption) (*ListServiceNameReply, error)
+	DeleteServiceName(ctx context.Context, in *DeleteServiceNameRequest, opts ...grpc.CallOption) (*ServiceNameCheckResponse, error)
+	RecoverServiceName(ctx context.Context, in *RecoverServiceNameRequest, opts ...grpc.CallOption) (*ServiceNameCheckResponse, error)
 }
 
 type serviceNameClient struct {
@@ -55,15 +56,6 @@ func (c *serviceNameClient) UpdateServiceName(ctx context.Context, in *UpdateSer
 	return out, nil
 }
 
-func (c *serviceNameClient) DeleteServiceName(ctx context.Context, in *DeleteServiceNameRequest, opts ...grpc.CallOption) (*ServiceNameCheckResponse, error) {
-	out := new(ServiceNameCheckResponse)
-	err := c.cc.Invoke(ctx, "/api.serviceName.v1.ServiceName/DeleteServiceName", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *serviceNameClient) GetServiceName(ctx context.Context, in *GetServiceNameRequest, opts ...grpc.CallOption) (*ServiceNameInfoResponse, error) {
 	out := new(ServiceNameInfoResponse)
 	err := c.cc.Invoke(ctx, "/api.serviceName.v1.ServiceName/GetServiceName", in, out, opts...)
@@ -82,15 +74,34 @@ func (c *serviceNameClient) ListServiceName(ctx context.Context, in *ListService
 	return out, nil
 }
 
+func (c *serviceNameClient) DeleteServiceName(ctx context.Context, in *DeleteServiceNameRequest, opts ...grpc.CallOption) (*ServiceNameCheckResponse, error) {
+	out := new(ServiceNameCheckResponse)
+	err := c.cc.Invoke(ctx, "/api.serviceName.v1.ServiceName/DeleteServiceName", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *serviceNameClient) RecoverServiceName(ctx context.Context, in *RecoverServiceNameRequest, opts ...grpc.CallOption) (*ServiceNameCheckResponse, error) {
+	out := new(ServiceNameCheckResponse)
+	err := c.cc.Invoke(ctx, "/api.serviceName.v1.ServiceName/RecoverServiceName", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ServiceNameServer is the server API for ServiceName service.
 // All implementations must embed UnimplementedServiceNameServer
 // for forward compatibility
 type ServiceNameServer interface {
 	CreateServiceName(context.Context, *CreateServiceNameRequest) (*ServiceNameInfoResponse, error)
 	UpdateServiceName(context.Context, *UpdateServiceNameRequest) (*ServiceNameInfoResponse, error)
-	DeleteServiceName(context.Context, *DeleteServiceNameRequest) (*ServiceNameCheckResponse, error)
 	GetServiceName(context.Context, *GetServiceNameRequest) (*ServiceNameInfoResponse, error)
 	ListServiceName(context.Context, *ListServiceNameRequest) (*ListServiceNameReply, error)
+	DeleteServiceName(context.Context, *DeleteServiceNameRequest) (*ServiceNameCheckResponse, error)
+	RecoverServiceName(context.Context, *RecoverServiceNameRequest) (*ServiceNameCheckResponse, error)
 	mustEmbedUnimplementedServiceNameServer()
 }
 
@@ -104,14 +115,17 @@ func (UnimplementedServiceNameServer) CreateServiceName(context.Context, *Create
 func (UnimplementedServiceNameServer) UpdateServiceName(context.Context, *UpdateServiceNameRequest) (*ServiceNameInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateServiceName not implemented")
 }
-func (UnimplementedServiceNameServer) DeleteServiceName(context.Context, *DeleteServiceNameRequest) (*ServiceNameCheckResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteServiceName not implemented")
-}
 func (UnimplementedServiceNameServer) GetServiceName(context.Context, *GetServiceNameRequest) (*ServiceNameInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetServiceName not implemented")
 }
 func (UnimplementedServiceNameServer) ListServiceName(context.Context, *ListServiceNameRequest) (*ListServiceNameReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListServiceName not implemented")
+}
+func (UnimplementedServiceNameServer) DeleteServiceName(context.Context, *DeleteServiceNameRequest) (*ServiceNameCheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteServiceName not implemented")
+}
+func (UnimplementedServiceNameServer) RecoverServiceName(context.Context, *RecoverServiceNameRequest) (*ServiceNameCheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RecoverServiceName not implemented")
 }
 func (UnimplementedServiceNameServer) mustEmbedUnimplementedServiceNameServer() {}
 
@@ -162,24 +176,6 @@ func _ServiceName_UpdateServiceName_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ServiceName_DeleteServiceName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteServiceNameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ServiceNameServer).DeleteServiceName(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.serviceName.v1.ServiceName/DeleteServiceName",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceNameServer).DeleteServiceName(ctx, req.(*DeleteServiceNameRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _ServiceName_GetServiceName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetServiceNameRequest)
 	if err := dec(in); err != nil {
@@ -216,6 +212,42 @@ func _ServiceName_ListServiceName_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ServiceName_DeleteServiceName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteServiceNameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServiceNameServer).DeleteServiceName(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.serviceName.v1.ServiceName/DeleteServiceName",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServiceNameServer).DeleteServiceName(ctx, req.(*DeleteServiceNameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ServiceName_RecoverServiceName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RecoverServiceNameRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ServiceNameServer).RecoverServiceName(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.serviceName.v1.ServiceName/RecoverServiceName",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ServiceNameServer).RecoverServiceName(ctx, req.(*RecoverServiceNameRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ServiceName_ServiceDesc is the grpc.ServiceDesc for ServiceName service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -232,16 +264,20 @@ var ServiceName_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ServiceName_UpdateServiceName_Handler,
 		},
 		{
-			MethodName: "DeleteServiceName",
-			Handler:    _ServiceName_DeleteServiceName_Handler,
-		},
-		{
 			MethodName: "GetServiceName",
 			Handler:    _ServiceName_GetServiceName_Handler,
 		},
 		{
 			MethodName: "ListServiceName",
 			Handler:    _ServiceName_ListServiceName_Handler,
+		},
+		{
+			MethodName: "DeleteServiceName",
+			Handler:    _ServiceName_DeleteServiceName_Handler,
+		},
+		{
+			MethodName: "RecoverServiceName",
+			Handler:    _ServiceName_RecoverServiceName_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

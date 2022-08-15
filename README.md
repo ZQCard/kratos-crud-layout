@@ -1,22 +1,21 @@
 # Kratos Project CRUD Template
-在使用go-kratos开发grpc服务时候，使用官方 kratos-layout 需要更改很多东西，甚至会不生效。因为开发一套自定义的[crud模板](https://github.com/ZQCard/kratos-crud-layout )。生成以项目文件夹首字母为大写的grpc服务
-
-基于[kratos-layout](https://github.com/go-kratos/kratos-layout) 生成的crud项目模板,根据文件夹名称生成相应的服务
+基于[kratos-layout](https://github.com/go-kratos/kratos-layout) 生成的crud项目模板,根据文件夹名称生成第一个字母大写服务。
 
 ### 中间件
-
 服务发现 consul
+
+链路追踪 jaeger
 
 缓存 redis
 
 数据库 mysql
 
-链路追踪 jaeger
+数据库中间件 gorm
+
 
 ### 使用方式
 
 PS：前提已经安装好kratos
-
 
 # 开始使用
 ### 创建项目
@@ -24,8 +23,6 @@ PS：前提已经安装好kratos
 
 ```bash
 kratos new administrator -r https://github.com/ZQCard/kratos-crud-layout.git
-# 国内拉取失败可使用gitee源
-kratos new administrator -r https://gitee.com/zq11/kratos-crud-layout.git
 ```
 
 ### 使用命令
@@ -34,22 +31,31 @@ kratos new administrator -r https://gitee.com/zq11/kratos-crud-layout.git
 make newServiceInit
 ```
 
-### 更改配置文件
+### 更改数据库配置
 ```bash
-# 如新增配置项, 需更改 ./internal/conf/conf.proto 且执行make config
-vim ./configs/config.yaml
+vim ./internal/configs/config.yaml
 ```
 
 ### 更改数据表名称
-
-目前数据表名称只有id字段
-
 ```bash
-vim ./internal/data/entity/administrator.go TableName()
+vim ./internal/data/entity/serviceName.go TableName()
+```
+
+### 数据表结构
+```sql
+CREATE TABLE `serviceName` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name` char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '名称',
+  `created_at` timestamp NOT NULL COMMENT '创建时间',
+  `updated_at` timestamp NOT NULL COMMENT '更新时间',
+  `deleted_at` char(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '删除时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='数据表备注';
 ```
 
 ### 执行程序
 ```bash
+# 启动端口 :12345
 kratos run
 ```
 
