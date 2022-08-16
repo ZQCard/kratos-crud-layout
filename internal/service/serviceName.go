@@ -30,13 +30,7 @@ func (s *ServiceNameService) CreateServiceName(ctx context.Context, req *v1.Crea
 	if err != nil {
 		return nil, err
 	}
-	return &v1.ServiceNameInfoResponse{
-		Id:        serviceNameInfo.Id,
-		Name:      serviceNameInfo.Name,
-		CreatedAt: serviceNameInfo.CreatedAt,
-		UpdatedAt: serviceNameInfo.UpdatedAt,
-		DeletedAt: serviceNameInfo.DeletedAt,
-	}, nil
+	return bizServiceNameToInfoReply(serviceNameInfo), nil
 }
 func (s *ServiceNameService) UpdateServiceName(ctx context.Context, req *v1.UpdateServiceNameRequest) (*v1.ServiceNameInfoResponse, error) {
 	bc := &biz.ServiceName{
@@ -47,13 +41,7 @@ func (s *ServiceNameService) UpdateServiceName(ctx context.Context, req *v1.Upda
 	if err != nil {
 		return nil, err
 	}
-	return &v1.ServiceNameInfoResponse{
-		Id:        serviceNameInfo.Id,
-		Name:      serviceNameInfo.Name,
-		CreatedAt: serviceNameInfo.CreatedAt,
-		UpdatedAt: serviceNameInfo.UpdatedAt,
-		DeletedAt: serviceNameInfo.DeletedAt,
-	}, nil
+	return bizServiceNameToInfoReply(serviceNameInfo), nil
 }
 
 func (s *ServiceNameService) DeleteServiceName(ctx context.Context, req *v1.DeleteServiceNameRequest) (*v1.ServiceNameCheckResponse, error) {
@@ -86,14 +74,7 @@ func (s *ServiceNameService) GetServiceName(ctx context.Context, req *v1.GetServ
 	if err != nil {
 		return nil, err
 	}
-	response := &v1.ServiceNameInfoResponse{
-		Id:        serviceNameInfo.Id,
-		Name:      serviceNameInfo.Name,
-		CreatedAt: serviceNameInfo.CreatedAt,
-		UpdatedAt: serviceNameInfo.UpdatedAt,
-		DeletedAt: serviceNameInfo.DeletedAt,
-	}
-	return response, nil
+	return bizServiceNameToInfoReply(serviceNameInfo), nil
 }
 
 func (s *ServiceNameService) ListServiceName(ctx context.Context, req *v1.ListServiceNameRequest) (*v1.ListServiceNameReply, error) {
@@ -106,13 +87,17 @@ func (s *ServiceNameService) ListServiceName(ctx context.Context, req *v1.ListSe
 	response := &v1.ListServiceNameReply{}
 	response.Total = count
 	for _, v := range ServiceNameInfoList {
-		response.List = append(response.List, &v1.ServiceNameInfoResponse{
-			Id:        v.Id,
-			Name:      v.Name,
-			CreatedAt: v.CreatedAt,
-			UpdatedAt: v.UpdatedAt,
-			DeletedAt: v.DeletedAt,
-		})
+		response.List = append(response.List, bizServiceNameToInfoReply(v))
 	}
 	return response, nil
+}
+
+func bizServiceNameToInfoReply(info *biz.ServiceName) *v1.ServiceNameInfoResponse {
+	return &v1.ServiceNameInfoResponse{
+		Id:        info.Id,
+		Name:      info.Name,
+		CreatedAt: info.CreatedAt,
+		UpdatedAt: info.CreatedAt,
+		DeletedAt: info.DeletedAt,
+	}
 }
