@@ -17,8 +17,8 @@ type ServiceNameRepo struct {
 }
 
 // searchParam 搜索条件
-func (a ServiceNameRepo) searchParam(params map[string]interface{}) *gorm.DB {
-	conn := a.data.db.Model(&entity.ServiceNameEntity{})
+func (s ServiceNameRepo) searchParam(params map[string]interface{}) *gorm.DB {
+	conn := s.data.db.Model(&entity.ServiceNameEntity{})
 	if id, ok := params["id"]; ok && id.(int64) != 0 {
 		conn = conn.Where("id = ?", id)
 	}
@@ -36,11 +36,11 @@ func (a ServiceNameRepo) searchParam(params map[string]interface{}) *gorm.DB {
 	return conn
 }
 
-func (b ServiceNameRepo) GetServiceNameByParams(params map[string]interface{}) (record entity.ServiceNameEntity, err error) {
+func (s ServiceNameRepo) GetServiceNameByParams(params map[string]interface{}) (record entity.ServiceNameEntity, err error) {
 	if len(params) == 0 {
 		return entity.ServiceNameEntity{}, errors.New(http.StatusBadRequest, "MISSING_CONDITION", "缺少搜索条件")
 	}
-	conn := b.searchParam(params)
+	conn := s.searchParam(params)
 	if err = conn.First(&record).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return entity.ServiceNameEntity{}, errors.New(http.StatusBadRequest, "RECORD_NOT_FOUND", biz.ErrRecordNotFound)
@@ -50,7 +50,7 @@ func (b ServiceNameRepo) GetServiceNameByParams(params map[string]interface{}) (
 	return record, nil
 }
 
-func (b ServiceNameRepo) CreateServiceName(ctx context.Context, reqData *biz.ServiceName) (*biz.ServiceName, error) {
+func (s ServiceNameRepo) CreateServiceName(ctx context.Context, reqData *biz.ServiceName) (*biz.ServiceName, error) {
 	modelTable := entity.ServiceNameEntity{
 		Id:        0,
 		Name:      reqData.Name,
@@ -60,16 +60,16 @@ func (b ServiceNameRepo) CreateServiceName(ctx context.Context, reqData *biz.Ser
 	}
 
 	modelTable.Id = reqData.Id
-	if err := b.data.db.Model(&modelTable).Create(&modelTable).Error; err != nil {
+	if err := s.data.db.Model(&modelTable).Create(&modelTable).Error; err != nil {
 		return nil, errors.New(http.StatusInternalServerError, "SYSTEM_ERROR", err.Error())
 	}
 	response := ModelToResponse(modelTable)
 	return &response, nil
 }
 
-func (b ServiceNameRepo) UpdateServiceName(ctx context.Context, reqData *biz.ServiceName) (*biz.ServiceName, error) {
+func (s ServiceNameRepo) UpdateServiceName(ctx context.Context, reqData *biz.ServiceName) (*biz.ServiceName, error) {
 	// 根据id查找记录
-	record, err := b.GetServiceNameByParams(map[string]interface{}{
+	record, err := s.GetServiceNameByParams(map[string]interface{}{
 		"id": reqData.Id,
 	})
 	if err != nil {
@@ -77,7 +77,7 @@ func (b ServiceNameRepo) UpdateServiceName(ctx context.Context, reqData *biz.Ser
 	}
 	// 更新字段
 	record.Name = reqData.Name
-	if err := b.data.db.Model(&record).Where("id = ?", record.Id).Save(&record).Error; err != nil {
+	if err := s.data.db.Model(&record).Where("id = ?", record.Id).Save(&record).Error; err != nil {
 		return nil, errors.New(http.StatusInternalServerError, "SYSTEM_ERROR", err.Error())
 	}
 	// 返回数据
@@ -85,9 +85,9 @@ func (b ServiceNameRepo) UpdateServiceName(ctx context.Context, reqData *biz.Ser
 	return &response, nil
 }
 
-func (b ServiceNameRepo) GetServiceName(ctx context.Context, params map[string]interface{}) (*biz.ServiceName, error) {
+func (s ServiceNameRepo) GetServiceName(ctx context.Context, params map[string]interface{}) (*biz.ServiceName, error) {
 	// 根据id查找记录
-	record, err := b.GetServiceNameByParams(params)
+	record, err := s.GetServiceNameByParams(params)
 	if err != nil {
 		return nil, err
 	}
@@ -96,9 +96,9 @@ func (b ServiceNameRepo) GetServiceName(ctx context.Context, params map[string]i
 	return &response, nil
 }
 
-func (b ServiceNameRepo) ListServiceName(ctx context.Context, pageNum, pageSize int64, params map[string]interface{}) ([]*biz.ServiceName, int64, error) {
+func (s ServiceNameRepo) ListServiceName(ctx context.Context, pageNum, pageSize int64, params map[string]interface{}) ([]*biz.ServiceName, int64, error) {
 	list := []entity.ServiceNameEntity{}
-	conn := b.searchParam(params)
+	conn := s.searchParam(params)
 	err := conn.Scopes(entity.Paginate(pageNum, pageSize)).Find(&list).Error
 	if err != nil {
 		return nil, 0, errors.New(http.StatusInternalServerError, "SYSTEM_ERROR", err.Error())
@@ -114,9 +114,9 @@ func (b ServiceNameRepo) ListServiceName(ctx context.Context, pageNum, pageSize 
 	return rv, count, nil
 }
 
-func (b ServiceNameRepo) DeleteServiceName(ctx context.Context, id int64) error {
+func (s ServiceNameRepo) DeleteServiceName(ctx context.Context, id int64) error {
 	// 根据id查找记录
-	record, err := b.GetServiceNameByParams(map[string]interface{}{
+	record, err := s.GetServiceNameByParams(map[string]interface{}{
 		"id": id,
 	})
 	if err != nil {
@@ -125,14 +125,14 @@ func (b ServiceNameRepo) DeleteServiceName(ctx context.Context, id int64) error 
 	if id != record.Id {
 		return errors.New(http.StatusBadRequest, "RECORD_NOT_FOUND", biz.ErrRecordNotFound)
 	}
-	return b.data.db.Model(&record).Where("id = ?", id).UpdateColumn("deleted_at", timeSugar.GetCurrentYMDHIS()).Error
+	return s.data.db.Model(&record).Where("id = ?", id).UpdateColumn("deleted_at", timeSugar.GetCurrentYMDHIS()).Error
 }
 
-func (b ServiceNameRepo) RecoverServiceName(ctx context.Context, id int64) error {
+func (s ServiceNameRepo) RecoverServiceName(ctx context.Context, id int64) error {
 	if id == 0 {
 		return errors.New(http.StatusBadRequest, "MISSING_CONDITION", "缺少搜索条件")
 	}
-	err := b.data.db.Model(entity.ServiceNameEntity{}).Where("id = ?", id).UpdateColumn("deleted_at", "").Error
+	err := s.data.db.Model(entity.ServiceNameEntity{}).Where("id = ?", id).UpdateColumn("deleted_at", "").Error
 	if err != nil {
 		return errors.New(http.StatusInternalServerError, "SYSTEM_ERROR", err.Error())
 	}

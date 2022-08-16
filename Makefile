@@ -115,6 +115,7 @@ newServiceInit:
 	@$(shell rm ./api/$(SERVICE_NAME)/v1/serviceName*)
 	#替换每一个文件下的内容 (server)
 	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME_UPPER)/$(SERVICE_NAME_UPPERAll)/g" ./cmd/$(SERVICE_NAME)/wire_gen.go)
+	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME)/$(SERVICE_NAME)/g" ./cmd/$(SERVICE_NAME)/wire_gen.go)
 	#替换每一个文件下的内容 (service)
 	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME_UPPER)/$(SERVICE_NAME_UPPERAll)/g" ./internal/service/service.go)
 	@$(shell sed -i "" "s/$(TEMPLATE_SERVICE_NAME)/$(SERVICE_NAME)/g" ./internal/service/$(TEMPLATE_SERVICE_NAME).go)
