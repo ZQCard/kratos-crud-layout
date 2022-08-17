@@ -25,12 +25,20 @@ func (s ServiceNameRepo) searchParam(params map[string]interface{}) *gorm.DB {
 	if name, ok := params["name"]; ok && name.(string) != "" {
 		conn = conn.Where("name LIKE ?", "%"+name.(string)+"%")
 	}
-	// 包含删除
+	// 开始时间
+	if start, ok := params["created_at_start"]; ok && start.(string) != "" {
+		conn = conn.Where("created_at >= ", start.(string))
+	}
+	// 结束时间
+	if end, ok := params["created_at_end"]; ok && end.(string) != "" {
+		conn = conn.Where("created_at <= ", end.(string))
+	}
+	// 已删除
 	if isDeleted, ok := params["is_deleted"]; ok && isDeleted.(string) == entity.ServiceNameDeleted {
 		conn = conn.Scopes(entity.HasDelete())
 	}
-	// 不包含删除
-	if notDeleted, ok := params["not_deleted"]; ok && notDeleted.(string) == entity.ServiceNameUnDeleted {
+	// 未删除
+	if isDeleted, ok := params["is_deleted"]; ok && isDeleted.(string) == entity.ServiceNameUnDeleted {
 		conn = conn.Scopes(entity.UnDelete())
 	}
 	return conn

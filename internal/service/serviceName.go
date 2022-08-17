@@ -79,7 +79,10 @@ func (s *ServiceNameService) GetServiceName(ctx context.Context, req *v1.GetServ
 
 func (s *ServiceNameService) ListServiceName(ctx context.Context, req *v1.ListServiceNameRequest) (*v1.ListServiceNameReply, error) {
 	params := make(map[string]interface{})
+	params["is_deleted"] = req.IsDeleted
 	params["name"] = req.Name
+	params["created_at_start"] = req.CreatedAtStart
+	params["created_at_end"] = req.CreatedAtEnd
 	ServiceNameInfoList, count, err := s.serviceNameUseCase.List(ctx, req.PageNum, req.PageSize, params)
 	if err != nil {
 		return nil, err

@@ -9,7 +9,7 @@ const (
 	// ServiceNameDeleted 已经删除
 	ServiceNameDeleted = "1"
 	// ServiceNameUnDeleted 未删除
-	ServiceNameUnDeleted = "0"
+	ServiceNameUnDeleted = "2"
 )
 
 type ServiceNameEntity struct {
