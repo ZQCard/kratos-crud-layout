@@ -2,8 +2,13 @@ package biz
 
 import (
 	"context"
-	"github.com/ZQCard/kratos-crud-layout/third_party/baseConvert"
+	"net/http"
+
+	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
+
+	"github.com/ZQCard/kratos-crud-layout/third_party/baseConvert"
+	"github.com/ZQCard/kratos-crud-layout/utils/validate"
 )
 
 var (
@@ -12,7 +17,7 @@ var (
 
 type ServiceName struct {
 	Id        int64
-	Name      string
+	Name      string `validate:"required,max=20" label:"名称"`
 	CreatedAt string
 	UpdatedAt string
 	DeletedAt string
@@ -38,6 +43,10 @@ func NewServiceNameUseCase(repo ServiceNameRepo, logger log.Logger) *ServiceName
 }
 
 func (uc *ServiceNameUseCase) Create(ctx context.Context, data *ServiceName) (*ServiceName, error) {
+	err := validate.ValidateStructCN(data)
+	if err != nil {
+		return &ServiceName{}, errors.New(http.StatusBadRequest, "PARAMS_ERROR", err.Error())
+	}
 	return uc.repo.CreateServiceName(ctx, data)
 }
 
@@ -50,6 +59,13 @@ func (uc *ServiceNameUseCase) Recover(ctx context.Context, id int64) error {
 }
 
 func (uc *ServiceNameUseCase) Update(ctx context.Context, data *ServiceName) (*ServiceName, error) {
+	if data.Id == 0 {
+		return &ServiceName{}, errors.New(http.StatusBadRequest, "PARAMS_ERROR", "id不得为空")
+	}
+	err := validate.ValidateStructCN(data)
+	if err != nil {
+		return &ServiceName{}, errors.New(http.StatusBadRequest, "PARAMS_ERROR", err.Error())
+	}
 	return uc.repo.UpdateServiceName(ctx, data)
 }
 

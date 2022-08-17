@@ -3,8 +3,12 @@ module github.com/ZQCard/kratos-crud-layout
 go 1.17
 
 require (
+	github.com/bwmarrin/snowflake v0.3.0
 	github.com/go-kratos/kratos/contrib/registry/consul/v2 v2.0.0-20220724071216-14cfd65b6275
 	github.com/go-kratos/kratos/v2 v2.4.0
+	github.com/go-playground/locales v0.14.0
+	github.com/go-playground/universal-translator v0.18.0
+	github.com/go-playground/validator/v10 v10.11.0
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/google/wire v0.5.0
 	github.com/hashicorp/consul/api v1.13.1
@@ -19,7 +23,6 @@ require (
 
 require (
 	github.com/armon/go-metrics v0.0.0-20180917152333-f0300d1749da // indirect
-	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
@@ -38,6 +41,7 @@ require (
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-colorable v0.1.6 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
@@ -45,6 +49,7 @@ require (
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.20.0 // indirect
 	go.opentelemetry.io/otel/trace v1.8.0 // indirect
+	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3 // indirect
 	golang.org/x/net v0.0.0-20220425223048-2871e0cb64e4 // indirect
 	golang.org/x/sync v0.0.0-20220513210516-0976fa681c29 // indirect
 	golang.org/x/sys v0.0.0-20220422013727-9388b58f7150 // indirect
