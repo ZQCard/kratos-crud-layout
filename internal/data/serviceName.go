@@ -149,19 +149,19 @@ func (s ServiceNameRepo) RecoverServiceName(ctx context.Context, id int64) error
 
 // ModelToResponse 转换 serviceName 表中所有字段的值
 func ModelToResponse(serviceName entity.ServiceNameEntity) biz.ServiceName {
-	administratorInfoRsp := biz.ServiceName{
+	serviceNameInfoRsp := biz.ServiceName{
 		Id:        serviceName.Id,
 		Name:      serviceName.Name,
 		CreatedAt: timeSugar.FormatYMDHIS(serviceName.CreatedAt),
 		UpdatedAt: timeSugar.FormatYMDHIS(serviceName.UpdatedAt),
 		DeletedAt: serviceName.DeletedAt,
 	}
-	return administratorInfoRsp
+	return serviceNameInfoRsp
 }
 
 func NewServiceNameRepo(data *Data, logger log.Logger) biz.ServiceNameRepo {
 	return &ServiceNameRepo{
 		data: data,
-		log:  log.NewHelper(log.With(logger, "module", "data/administrator-service")),
+		log:  log.NewHelper(log.With(logger, "module", "data/serviceName")),
 	}
 }

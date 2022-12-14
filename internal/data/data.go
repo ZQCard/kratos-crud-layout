@@ -34,14 +34,14 @@ type Data struct {
 
 // NewData .
 func NewData(db *gorm.DB, redisCmd redis.Cmdable, logger log.Logger) (*Data, func(), error) {
-	logs := log.NewHelper(log.With(logger, "module", "administrator-service/data"))
+	logs := log.NewHelper(log.With(logger, "module", "serviceName/data"))
 
 	d := &Data{
 		db:       db.Debug(),
 		redisCli: redisCmd,
 	}
 	return d, func() {
-		logs.Error("administrator-service/data failed")
+		logs.Error("serviceName/data failed")
 	}, nil
 }
 
@@ -70,7 +70,7 @@ func NewRegistrar(conf *conf.Registry) registry.Registrar {
 }
 
 func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
-	logs := log.NewHelper(log.With(logger, "module", "administrator-service/data/redis"))
+	logs := log.NewHelper(log.With(logger, "module", "serviceName/data/redis"))
 	client := redis.NewClient(&redis.Options{
 		Addr:         conf.Redis.Addr,
 		Password:     conf.Redis.Password,
@@ -87,7 +87,7 @@ func NewRedisCmd(conf *conf.Data, logger log.Logger) redis.Cmdable {
 }
 
 func NewMysqlCmd(conf *conf.Data, logger log.Logger) *gorm.DB {
-	logs := log.NewHelper(log.With(logger, "module", "administrator-service/data/mysql"))
+	logs := log.NewHelper(log.With(logger, "module", "serviceName/data/mysql"))
 	db, err := gorm.Open(mysql.Open(conf.Database.Source), &gorm.Config{})
 	if err != nil {
 		logs.Fatalf("mysql connect error: %v", err)
